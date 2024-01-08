@@ -24,7 +24,8 @@
         <td class="text-overflow">
           <a th:href="${app.url}" target="_blank" th:text="${app.url}"></a>
         </td>
-        <td class="for-tablet text-overflow" th:text="${app.description}"></td>
+        <td class="for-tablet text-overflow" th:text="${app.description}"
+          style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></td>
         <td>
           <!-- 画像があれば縮小して表示 -->
           <img th:if="${app.image != null && app.image != ''}" th:src="${app.image}" th:alt="現在の画像"
