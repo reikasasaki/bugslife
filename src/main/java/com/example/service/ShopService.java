@@ -21,7 +21,11 @@ public class ShopService {
 	}
 
 	public List<Shop> findAll(Shop probe) {
-		return shopRepository.findAll(Example.of(probe));
+		if (probe.getName() != null) {
+			return shopRepository.findByNameContaining(probe.getName());
+		} else {
+			return shopRepository.findAll(Example.of(probe));
+		}
 	}
 
 	public Optional<Shop> findOne(Long id) {
