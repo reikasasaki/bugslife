@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layout/layout}">
+layout:decorate="~{layout/layout}">
 <th:block layout:fragment="content">
   <h1 th:if="${category.id == null}">カテゴリー登録</h1>
   <h1 th:if="${category.id != null}">カテゴリー編集</h1>
@@ -15,7 +15,7 @@
     </div>
     <div class="form-group">
       <label for="name">名前</label>
-      <input id="name" name="name" type="text" class="form-control" th:field="*{name}" />
+      <input id="name" name="name" type="text" class="form-control" th:field="*{name}" maxlength="20"/>
     </div>
     <div class="form-group">
       <label for="display_order">表示順</label>
@@ -23,12 +23,12 @@
     </div>
     <div class="form-group">
       <label>説明</label>
-      <textarea class="form-control"></textarea>
+      <textarea class="form-control" name="description" type="text" th:field="*{description}" maxlength="300"></textarea>
     </div>
 
     <input id="submit" type="submit" class="btn btn-success" value="保存">
     <a th:href="@{/categories}" class="btn btn-default btn-secondary">戻る</a>
   </form>
 </th:block>
-
 </html>
+<script src="/js/category/category-form.js"></script>
