@@ -1,7 +1,6 @@
 package com.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 import com.example.model.Shop;
 import com.example.repository.ShopRepository;
@@ -16,15 +15,11 @@ public class ShopService {
 	@Autowired
 	private ShopRepository shopRepository;
 
-	public List<Shop> findAll() {
-		return shopRepository.findAll();
-	}
-
 	public List<Shop> findAll(Shop probe) {
-		if (probe.getName() != null) {
+		if (probe.getName() != null && !probe.getName().isEmpty()) {
 			return shopRepository.findByNameContaining(probe.getName());
 		} else {
-			return shopRepository.findAll(Example.of(probe));
+			return shopRepository.findAll();
 		}
 	}
 

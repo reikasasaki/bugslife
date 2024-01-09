@@ -38,7 +38,7 @@ public class ShopController {
 		}
 		List<Shop> shops = shopService.findAll(probe);
 		model.addAttribute("listShop", shops);
-		model.addAttribute("name", name.isPresent() ? name.get() : null);
+		model.addAttribute("name", name.orElse(null));
 		return "shop/index";
 	}
 
