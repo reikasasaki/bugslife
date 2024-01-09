@@ -16,15 +16,15 @@ public class ShopService {
 	@Autowired
 	private ShopRepository shopRepository;
 
-	public List<Shop> findAll() {
-		return shopRepository.findAll();
-	}
+	// public List<Shop> findAll(Shop probe) {
+	// return shopRepository.findAll(Example.of(probe));
+	// }
 
 	public List<Shop> findAll(Shop probe) {
-		if (probe.getName() != null) {
+		if (probe.getName() != null && !probe.getName().isEmpty()) {
 			return shopRepository.findByNameContaining(probe.getName());
 		} else {
-			return shopRepository.findAll(Example.of(probe));
+			return shopRepository.findAll();
 		}
 	}
 
