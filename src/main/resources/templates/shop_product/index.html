@@ -76,7 +76,9 @@
         <td th:text="${product.name}"></td>
         <td th:text="${product.code}"></td>
         <td>
-          <span class="badge text-bg-info" th:text="${product.categoryName}"></span>
+          <span class="badge text-bg-info" th:if="${product.categoryName != null}" th:text="${product.categoryName}"></span>
+          <span th:if="${product.categoryName == null}"></span>
+       </td>
         </td>
         <td th:text="${product.weight}"></td>
         <td th:text="${product.height}"></td>
