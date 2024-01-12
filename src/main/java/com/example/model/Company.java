@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 
 // 取引先会社情報テーブル
 @Entity
@@ -28,6 +29,7 @@ public class Company extends TimeEntity implements Serializable {
 
 	// 取引先会社名
 	@Column(name = "name", nullable = false)
+	@NotBlank
 	private String name;
 
 	// メールアドレス
