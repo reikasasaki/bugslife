@@ -37,7 +37,7 @@
     </div>
     <div class="form-group">
       <label for="memo">メモ</label>
-      <textarea id="memo" name="memo" class="form-control" th:field="*{memo}"></textarea>
+      <textarea id="memo" name="memo" class="form-control" th:field="*{memo}" maxlength="1000"></textarea>
     </div>
 
     <button type="submit" class="btn btn-success">保存</button>
