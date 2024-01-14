@@ -90,10 +90,6 @@ public class ProductService {
 		if (form.getCategories() != null && form.getCategories().size() > 0) {
 			// categories で完全一致検索
 			query.where(categoryJoin.get("id").in(form.getCategories()));
-			// query.groupBy(categoryProductJoin.get("productId"));
-			// query.having(
-			// builder.equal(builder.count(categoryJoin.get("id")),
-			// form.getCategories().size()));
 		}
 
 		// weight で範囲検索
