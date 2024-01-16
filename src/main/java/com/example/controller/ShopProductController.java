@@ -1,7 +1,11 @@
 package com.example.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Map.Entry;
 
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +46,43 @@ public class ShopProductController {
 	public String index(Model model, @PathVariable("shopId") Long shopId, @ModelAttribute ProductSearchForm request) {
 		List<ProductWithCategoryName> all = productService.search(shopId, request);
 		List<Category> categories = categoryService.findAll();
+		if (request.getCategories() != null) {
+			// 製品ごとにカテゴリーカウント用Map
+			Map<Long, List<ProductWithCategoryName>> productIdCountMap = new HashMap<Long, List<ProductWithCategoryName>>();
+
+			for (ProductWithCategoryName item : all) {
+
+				Long itemId = item.getId();
+
+				if (productIdCountMap.containsKey(itemId)) {
+					List<ProductWithCategoryName> counter = productIdCountMap.get(itemId);
+					counter.add(item);
+					productIdCountMap.put(itemId, counter);
+					// カテゴリーに合致するたびItemに対してカウントをインクリメント
+					continue;
+				}
+
+				List<ProductWithCategoryName> counterList = new ArrayList<ProductWithCategoryName>();
+				counterList.add(item);
+				productIdCountMap.put(itemId, counterList);
+			}
+
+			List<ProductWithCategoryName> newResult = new ArrayList<ProductWithCategoryName>();
+			// 検索したカテゴリ数
+			int catCount = request.getCategories().size();
+			for (Entry<Long, List<ProductWithCategoryName>> categoryIdCountEntry : productIdCountMap.entrySet()) {
+
+				// アイテムに対してカウント数が検索したカテゴリ数を一致する場合だけ条件を通す
+				if (categoryIdCountEntry.getValue().size() != catCount) {
+					continue;
+				}
+
+				newResult.addAll(categoryIdCountEntry.getValue());
+			}
+
+			// 結果を入れ替え
+			all = newResult;
+		}
 		model.addAttribute("listProduct", all);
 		model.addAttribute("categories", categories);
 		model.addAttribute("request", request);
