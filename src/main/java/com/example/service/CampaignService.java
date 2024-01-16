@@ -122,7 +122,7 @@ public class CampaignService {
 	 * @param nexStatus 更新後ステータス
 	 * @throws Exception
 	 */
-	@Transactional(readOnly = false, rollbackFor = RuntimeException.class)
+	@Transactional(readOnly = false, rollbackFor = Exception.class)
 	public void bulkStatusUpdate(List<Long> idList, CampaignStatus nexStatus) throws Exception {
 		try {
 			idList.forEach(id -> {
@@ -134,7 +134,7 @@ public class CampaignService {
 				campaign.setStatus(nexStatus);
 				campaignRepository.save(campaign);
 			});
-		} catch (RuntimeException e) {
+		} catch (Exception e) {
 			throw new Exception(e.getMessage());
 		}
 	}
