@@ -7,15 +7,15 @@
     <hr />
     <div class="form-group">
       <label for="name">Name: </label>
-      <span class='font-impact' th:text="${app.name}"></span>
+      <span th:text="${app.name}"></span>
     </div>
     <div class="form-group">
       <label for="email">Url: </label>
-      <span class='font-impact' th:text="${app.url}"></span>
+      <span th:text="${app.url}"></span>
     </div>
     <div class="form-group">
       <label for="description">Description: </label>
-      <span class='font-impact' th:text="${app.description}"></span>
+      <span th:text="${app.description}"></span>
     </div>
     <div class="form-group">
       <label for="image">Image: </label>
@@ -32,14 +32,14 @@
       <span th:text="${app.active}"></span>
     </div>
     <div class="form-group">
-      <a class="btn btn-warning" th:href="@{/apps/{id}/edit(id = ${app.id})}">Edit this record</a>
+      <a class="btn btn-primary" th:href="@{/apps/{id}/edit(id = ${app.id})}">Edit this record</a>
       <form class="d-inline" th:action="@{/apps/{id}(id = ${app.id})}" th:method="delete">
-        <button class="btn btn-info" type="submit">Delete this record</button>
+        <button class="btn btn-danger" type="submit">Delete this record</button>
       </form>
     </div>
     <br />
     <div class="form-group ">
-      <a class="btn btn-light text-right" th:href="@{/apps}">Back to list All apps</a>
+      <a class="btn btn-secondary" th:href="@{/apps}">Back to list All apps</a>
     </div>
     <br />
   </div>
