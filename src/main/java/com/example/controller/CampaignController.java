@@ -15,6 +15,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -141,6 +142,7 @@ public class CampaignController {
 			this.setCommonData(model);
 			return "campaign/form";
 		}
+
 		Campaign target = null;
 		try {
 			// descriptionは2000文字まで
