@@ -26,7 +26,7 @@ public class Shop extends TimeEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false, columnDefinition = "VARCHAR(255) COLLATE NOCASE")
 	@NotBlank(message = "ショップ名を入力してください。")
 	@Size(max = 255, message = "ショップ名は255文字以内で入力してください。")
 	private String name;
