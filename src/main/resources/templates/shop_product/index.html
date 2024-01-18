@@ -76,7 +76,7 @@
         <td th:text="${product.name}"></td>
         <td th:text="${product.code}"></td>
         <td>
-          <span th:each="PWithC : ${productIdCountMap.get(product.id)}" class="badge text-bg-info" th:text="${PWithC.getCategoryName()}"></span>
+          <span th:each="PWithC : ${productIdMap.get(product.id)}" class="badge text-bg-info" th:text="${PWithC.getCategoryName()}"></span>
        </td>
         </td>
         <td th:text="${product.weight}"></td>

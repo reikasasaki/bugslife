@@ -47,29 +47,27 @@ public class ShopProductController {
 	public String index(Model model, @PathVariable("shopId") Long shopId, @ModelAttribute ProductSearchForm request) {
 		List<ProductWithCategoryName> all = productService.search(shopId, request);
 		List<Category> categories = categoryService.findAll();
-		// 製品ごとにカテゴリーカウント用Map
-		Map<Long, List<ProductWithCategoryName>> productIdCountMap = new HashMap<Long, List<ProductWithCategoryName>>();
-		List<ProductWithCategoryName> productList = new ArrayList<ProductWithCategoryName>();
+		if (request.getCategories() != null) {
+			// 製品ごとにカテゴリーカウント用Map
+			Map<Long, List<ProductWithCategoryName>> productIdCountMap = new HashMap<Long, List<ProductWithCategoryName>>();
 
-		for (ProductWithCategoryName item : all) {
+			for (ProductWithCategoryName item : all) {
 
-			Long itemId = item.getId();
+				Long itemId = item.getId();
 
-			if (productIdCountMap.containsKey(itemId)) {
-				List<ProductWithCategoryName> counter = productIdCountMap.get(itemId);
-				counter.add(item);
-				productIdCountMap.put(itemId, counter);
-				// カテゴリーに合致するたびItemに対してカウントをインクリメント
-				continue;
+				if (productIdCountMap.containsKey(itemId)) {
+					List<ProductWithCategoryName> counter = productIdCountMap.get(itemId);
+					counter.add(item);
+					productIdCountMap.put(itemId, counter);
+					// カテゴリーに合致するたびItemに対してカウントをインクリメント
+					continue;
+				}
+
+				List<ProductWithCategoryName> counterList = new ArrayList<ProductWithCategoryName>();
+				counterList.add(item);
+				productIdCountMap.put(itemId, counterList);
 			}
 
-			List<ProductWithCategoryName> counterList = new ArrayList<ProductWithCategoryName>();
-			counterList.add(item);
-			productList.add(item);
-			productIdCountMap.put(itemId, counterList);
-		}
-
-		if (request.getCategories() != null) {
 			List<ProductWithCategoryName> newResult = new ArrayList<ProductWithCategoryName>();
 			// 検索したカテゴリ数
 			int catCount = request.getCategories().size();
@@ -86,10 +84,31 @@ public class ShopProductController {
 			// 結果を入れ替え
 			all = newResult;
 		}
+		// 製品ごとにカテゴリーカウント用Map
+		Map<Long, List<ProductWithCategoryName>> productIdMap = new HashMap<Long, List<ProductWithCategoryName>>();
+		List<ProductWithCategoryName> productList = new ArrayList<ProductWithCategoryName>();
 
-		model.addAttribute("productIdCountMap", productIdCountMap);
+		for (ProductWithCategoryName item : all) {
+
+			Long itemId = item.getId();
+
+			if (productIdMap.containsKey(itemId)) {
+				List<ProductWithCategoryName> counter = productIdMap.get(itemId);
+				counter.add(item);
+				productIdMap.put(itemId, counter);
+				// カテゴリーに合致するたびItemに対してカウントをインクリメント
+				continue;
+			}
+
+			List<ProductWithCategoryName> counterList = new ArrayList<ProductWithCategoryName>();
+			counterList.add(item);
+			productList.add(item);
+			productIdMap.put(itemId, counterList);
+		}
+
+		model.addAttribute("productIdMap", productIdMap);
 		model.addAttribute("productList", productList);
-		model.addAttribute("listProduct", all);
+		// model.addAttribute("listProduct", all);
 		model.addAttribute("categories", categories);
 		model.addAttribute("request", request);
 		model.addAttribute("shopId", shopId);
