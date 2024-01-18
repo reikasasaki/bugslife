@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Map.Entry;
 
+import org.springframework.beans.BeanUtils;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -83,7 +84,30 @@ public class ShopProductController {
 			// 結果を入れ替え
 			all = newResult;
 		}
-		model.addAttribute("listProduct", all);
+		// 製品ごとにカテゴリーカウント用Map
+		Map<Long, List<ProductWithCategoryName>> productIdMap = new HashMap<Long, List<ProductWithCategoryName>>();
+		List<ProductWithCategoryName> productList = new ArrayList<ProductWithCategoryName>();
+
+		for (ProductWithCategoryName item : all) {
+
+			Long itemId = item.getId();
+
+			if (productIdMap.containsKey(itemId)) {
+				List<ProductWithCategoryName> counter = productIdMap.get(itemId);
+				counter.add(item);
+				productIdMap.put(itemId, counter);
+				// カテゴリーに合致するたびItemに対してカウントをインクリメント
+				continue;
+			}
+
+			List<ProductWithCategoryName> counterList = new ArrayList<ProductWithCategoryName>();
+			counterList.add(item);
+			productList.add(item);
+			productIdMap.put(itemId, counterList);
+		}
+
+		model.addAttribute("productIdMap", productIdMap);
+		model.addAttribute("productList", productList);
 		model.addAttribute("categories", categories);
 		model.addAttribute("request", request);
 		model.addAttribute("shopId", shopId);
