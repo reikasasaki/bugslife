@@ -108,7 +108,6 @@ public class ShopProductController {
 
 		model.addAttribute("productIdMap", productIdMap);
 		model.addAttribute("productList", productList);
-		// model.addAttribute("listProduct", all);
 		model.addAttribute("categories", categories);
 		model.addAttribute("request", request);
 		model.addAttribute("shopId", shopId);
