@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+  <h1>税率一覧</h1>
+  <hr />
+  <a th:href="@{/tax/new}">新規登録</a><br /><br />
+
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th col="col">税率</th>
+        <th col="col"></th>
+        <th col="col"></th>
+        <th col="col"></th>
+        <th col="col"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr th:each="tax : ${taxList}">
+        <td th:text="${tax.rate}"></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+</th:block>
+
+</html>

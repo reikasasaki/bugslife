@@ -3,7 +3,7 @@ package com.example.constants;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class TaxType {
+public final class Tax {
 	/**
 	 * Rate
 	 */
@@ -18,15 +18,15 @@ public final class TaxType {
 	public static final String ROUND = "round";
 	public static final String CEIL = "ceil";
 
-	private TaxType() {}
+	private Tax(int i, int rate, boolean taxIncluded, String rounding) {}
 
-	public final static class Tax {
+	public final static class taxes {
 		public Integer id;
 		public Integer rate;
 		public Boolean taxIncluded;
 		public String rounding;
 
-		public Tax(Integer id, Integer rate, Boolean taxIncluded, String rounding) {
+		public taxes(Integer id, Integer rate, Boolean taxIncluded, String rounding) {
 			this.id = id;
 			this.rate = rate;
 			this.taxIncluded = taxIncluded;
@@ -62,7 +62,7 @@ public final class TaxType {
 	public static Tax get(Integer rate, Boolean taxIncluded, String rounding) {
 		List<Tax> taxes = get();
 		for (Tax tax : taxes) {
-			if (tax.rate.equals(rate) && tax.taxIncluded.equals(taxIncluded) && tax.rounding.equals(rounding)) {
+			if (rate.equals(rate) && taxIncluded.equals(taxIncluded) && rounding.equals(rounding)) {
 				return tax;
 			}
 		}

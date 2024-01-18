@@ -3,7 +3,7 @@ package com.example.model;
 import java.io.Serializable;
 import java.lang.String;
 
-import com.example.constants.TaxType;
+import com.example.constants.Tax;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,7 +53,7 @@ public class OrderProduct extends TimeEntity implements Serializable {
 	@Column(name = "tax_rounding", nullable = false)
 	private String taxRounding;
 
-	public void setTaxType(TaxType.Tax tax) {
+	public void setTaxType(Tax.taxes tax) {
 		this.setTaxRate(tax.rate);
 		this.setTaxIncluded(tax.taxIncluded);
 		this.setTaxRounding(tax.rounding);
