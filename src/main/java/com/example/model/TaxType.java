@@ -23,7 +23,7 @@ public class TaxType {
 	private Long id;
 
 	@Column(name = "tax_rate", nullable = false)
-	private Integer rate;
+	public Integer taxRate;
 
 	@Column(name = "tax_included", nullable = false)
 	private Boolean taxIncluded;

@@ -7,8 +7,10 @@ import org.springframework.stereotype.Service;
 import com.example.model.Category;
 import com.example.model.CategoryProduct;
 import com.example.model.Product;
+import com.example.model.TaxType;
 import com.example.repository.CategoryProductRepository;
 import com.example.repository.ProductRepository;
+import com.example.repository.TaxTypeRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -38,6 +40,9 @@ public class ProductService {
 
 	@Autowired
 	private CategoryProductRepository categoryProductRepository;
+
+	@Autowired
+	private TaxTypeRepository taxTypeRepository;
 
 	public List<Product> findAll() {
 		return productRepository.findAll();
@@ -136,7 +141,12 @@ public class ProductService {
 				: new ArrayList<>();
 
 		Product product = new Product(entity);
-		productRepository.save(product);
+		if (product != null) {
+			Long taxType = taxTypeRepository.findByTaxRateAndTaxIncludedAndRounding(entity.getRate(),
+					entity.getTaxIncluded(), entity.getRounding());
+			product.setTaxType(taxType);
+			productRepository.save(product);
+		}
 
 		// 未処理のカテゴリーIDのリスト
 		List<Long> categoryIds = entity.getCategoryIds();

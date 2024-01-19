@@ -4,12 +4,12 @@ layout:decorate="~{layout/layout}">
   <h1>税率登録</h1>
   <hr />
   <form id="tax-form" th:action="@{/tax}" th:method="post"
-    th:object="${taxList}">
+    th:object="${taxType}">
     <input type="hidden" th:field="*{id}" />
 
     <div class="form-group">
-      <label for="rate">税率</label>
-      <input id="rate" name="rate" type="number" class="form-control" th:field="*{rate}" />
+      <label for="taxRate">税率</label>
+      <input id="taxRate" name="taxRate" type="number" class="form-control" th:field="*{taxRate}" />
     </div>
     <input id="submit" type="submit" class="btn btn-success" value="保存">
     <a th:href="@{/tax}" class="btn btn-default btn-secondary">戻る</a>

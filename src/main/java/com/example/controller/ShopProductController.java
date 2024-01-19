@@ -24,14 +24,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.constants.Message;
-import com.example.constants.Tax;
 import com.example.entity.ProductWithCategoryName;
 import com.example.form.ProductForm;
 import com.example.form.ProductSearchForm;
 import com.example.model.Category;
 import com.example.model.Product;
+import com.example.model.TaxType;
 import com.example.service.CategoryService;
 import com.example.service.ProductService;
+import com.example.service.TaxTypeService;
 
 @Controller
 @RequestMapping("/shops/{shopId}/products")
@@ -42,6 +43,9 @@ public class ShopProductController {
 
 	@Autowired
 	private CategoryService categoryService;
+
+	@Autowired
+	private TaxTypeService taxTypeService;
 
 	@GetMapping
 	public String index(Model model, @PathVariable("shopId") Long shopId, @ModelAttribute ProductSearchForm request) {
@@ -119,9 +123,10 @@ public class ShopProductController {
 		if (id != null) {
 			Optional<Product> product = productService.findOne(id);
 			List<Category> categories = categoryService.findAll();
+			Optional<TaxType> taxtype = taxTypeService.findOne(product.get().getTaxType());
 			model.addAttribute("categories", categories);
 			model.addAttribute("product", product.get());
-			model.addAttribute("tax", Tax.get(product.get().getTaxType()));
+			model.addAttribute("tax", taxtype);
 			model.addAttribute("shopId", shopId);
 		}
 		return "shop_product/show";

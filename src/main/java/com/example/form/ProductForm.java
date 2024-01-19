@@ -2,16 +2,18 @@ package com.example.form;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.example.constants.Tax;
 import com.example.model.CategoryProduct;
 import com.example.model.Product;
+import com.example.model.TaxType;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import javassist.NotFoundException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -47,13 +49,15 @@ public class ProductForm {
 	private Double price;
 
 	@NotNull(message = "税率を選択してください。")
-	private Integer rate = Tax.RATE_10;
+	private Integer rate;
 
 	@NotNull(message = "入力価格を選択してください。")
 	private Boolean taxIncluded = false;
 
 	@NotNull(message = "端数処理を選択してください。")
-	private String rounding = Tax.ROUND;
+	private String rounding;
+
+	private Long taxType;
 
 	public ProductForm(Product product) {
 		this.setId(product.getId());
@@ -70,14 +74,8 @@ public class ProductForm {
 		this.setWeight(product.getWeight());
 		this.setHeight(product.getHeight());
 		this.setPrice(product.getPrice());
-		var tax = Tax.get(product.getTaxType());
-		this.setRate(tax.rate);
-		this.setTaxIncluded(tax.taxIncluded);
-		this.setRounding(tax.rounding);
+		this.setTaxType(product.getTaxType());
+
 	}
 
-	public Integer getTaxType() {
-		var tax = Tax.get(rate, taxIncluded, rounding);
-		return tax.id;
-	}
 }

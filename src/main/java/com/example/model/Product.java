@@ -3,6 +3,7 @@ package com.example.model;
 import java.io.Serializable;
 import java.lang.String;
 import java.util.List;
+import java.util.Optional;
 
 import com.example.form.ProductForm;
 
@@ -16,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import javassist.tools.framedump;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.OneToMany;
@@ -51,7 +53,7 @@ public class Product extends TimeEntity implements Serializable {
 	private Double price;
 
 	@Column(name = "tax_type", nullable = false)
-	private Integer taxType;
+	private Long taxType;
 
 	public Product() {}
 

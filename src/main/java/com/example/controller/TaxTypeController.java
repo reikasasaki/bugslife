@@ -2,20 +2,25 @@ package com.example.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import com.example.constants.Message;
+import com.example.model.Category;
 import com.example.model.TaxType;
 import com.example.service.TaxTypeService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -28,8 +33,8 @@ public class TaxTypeController {
 
 	@GetMapping
 	public String index(Model model) {
-		List<TaxType> all = taxTypeService.findAll();
-		model.addAttribute("taxList", all);
+		List<List<TaxType>> groupedTaxTypes = taxTypeService.getGroupedTaxTypes();
+		model.addAttribute("groupedTaxTypes", groupedTaxTypes);
 		return "tax_type/index";
 	}
 
@@ -43,13 +48,36 @@ public class TaxTypeController {
 	public String create(RedirectAttributes redirectAttributes, @ModelAttribute TaxType entity) {
 		List<TaxType> taxTypes = new ArrayList<>();
 		try {
-			taxTypes = taxTypeService.save(entity.getId(), entity.getTaxRate());
+			taxTypes = taxTypeService.save(entity.getTaxRate());
 			redirectAttributes.addFlashAttribute("success", Message.MSG_SUCESS_INSERT);
 			redirectAttributes.addAttribute("q", "create");
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("error", Message.MSG_ERROR);
 			e.printStackTrace();
 
+		}
+		return "redirect:/tax";
+	}
+
+	@GetMapping("/{rate}")
+	public String show(Model model, @PathVariable Integer rate) {
+		if (rate != null) {
+			List<TaxType> taxtypes = taxTypeService.findByTaxRate(rate);
+			model.addAttribute("taxRateList", taxtypes);
+		}
+		return "tax_type/show";
+	}
+
+	@DeleteMapping("/{rate}")
+	public String delete(@PathVariable Integer rate, RedirectAttributes redirectAttributes) {
+		try {
+			if (rate != null) {
+				taxTypeService.delete(rate);
+				redirectAttributes.addFlashAttribute("success", Message.MSG_SUCESS_DELETE);
+			}
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("error", Message.MSG_ERROR);
+			throw new ServiceException(e.getMessage());
 		}
 		return "redirect:/tax";
 	}

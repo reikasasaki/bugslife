@@ -17,12 +17,17 @@
       </tr>
     </thead>
     <tbody>
-      <tr th:each="tax : ${taxList}">
-        <td th:text="${tax.rate}"></td>
+      <tr th:each="groupedTaxTypeList : ${groupedTaxTypes}">
+        <td th:text="${groupedTaxTypeList[0].taxRate}"></td>
         <td></td>
         <td></td>
         <td></td>
         <td></td>
+        <td> <a class="btn btn-primary" th:href="@{/tax/{rate}(rate = ${groupedTaxTypeList[0].taxRate})}">詳細</a>
+          <form class="d-inline" th:action="@{/tax/{rate}(rate = ${groupedTaxTypeList[0].taxRate})}" th:method="delete">
+          <button class="btn btn-danger" type="submit">削除</button>
+        </form>
+      </td>
       </tr>
     </tbody>
   </table>
