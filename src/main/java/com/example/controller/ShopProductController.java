@@ -123,10 +123,10 @@ public class ShopProductController {
 		if (id != null) {
 			Optional<Product> product = productService.findOne(id);
 			List<Category> categories = categoryService.findAll();
-			Optional<TaxType> taxtype = taxTypeService.findOne(product.get().getTaxType());
+			Optional<TaxType> taxtype = taxTypeService.findOne(product.get().getTaxType2());
 			model.addAttribute("categories", categories);
 			model.addAttribute("product", product.get());
-			model.addAttribute("tax", taxtype);
+			model.addAttribute("tax", taxtype.get());
 			model.addAttribute("shopId", shopId);
 		}
 		return "shop_product/show";

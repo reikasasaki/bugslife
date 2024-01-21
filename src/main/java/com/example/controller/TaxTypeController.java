@@ -72,8 +72,23 @@ public class TaxTypeController {
 	public String delete(@PathVariable Integer rate, RedirectAttributes redirectAttributes) {
 		try {
 			if (rate != null) {
-				taxTypeService.delete(rate);
-				redirectAttributes.addFlashAttribute("success", Message.MSG_SUCESS_DELETE);
+				List<TaxType> taxtypes = taxTypeService.findByTaxRate(rate);
+				boolean existFlg = false;
+				for (TaxType taxtype : taxtypes) {
+					if (taxtype.getProducts().size() == 0) {
+						continue;
+					}
+					existFlg = true;
+					break;
+				}
+				if (existFlg) {
+					redirectAttributes.addFlashAttribute("error", "商品と紐づいているため削除できません。");
+
+				} else {
+					taxTypeService.delete(rate);
+					redirectAttributes.addFlashAttribute("success", Message.MSG_SUCESS_DELETE);
+
+				}
 			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("error", Message.MSG_ERROR);

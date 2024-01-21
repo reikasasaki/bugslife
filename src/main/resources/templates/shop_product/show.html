@@ -32,10 +32,10 @@
     <span th:text="${product.price}"></span>
   </div>
   <div class="form-group">
-    <label for="rate">税率: </label>
-    <span th:if="${tax.rate == 10}">通常税率（10%）</span>
-    <span th:if="${tax.rate == 8}">軽減税率（8%）</span>
-    <span th:if="${tax.rate == 0}">非課税（0%）</span>
+    <label for="taxRate">税率: </label>
+    <span th:if="${tax.taxRate == 10}">通常税率（10%）</span>
+    <span th:if="${tax.taxRate == 8}">軽減税率（8%）</span>
+    <span th:if="${tax.taxRate == 0}">非課税（0%）</span>
   </div>
   <div class="form-group">
     <label for="taxIncluded">入力価格: </label>

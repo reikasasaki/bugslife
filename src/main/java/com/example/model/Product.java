@@ -21,6 +21,7 @@ import javassist.tools.framedump;
 import lombok.Getter;
 import lombok.Setter;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 
 @Getter
 @Setter
@@ -53,7 +54,7 @@ public class Product extends TimeEntity implements Serializable {
 	private Double price;
 
 	@Column(name = "tax_type", nullable = false)
-	private Long taxType;
+	private Long taxType2;
 
 	public Product() {}
 
@@ -67,7 +68,7 @@ public class Product extends TimeEntity implements Serializable {
 		this.setWeight(form.getWeight());
 		this.setHeight(form.getHeight());
 		this.setPrice(form.getPrice());
-		this.setTaxType(form.getTaxType());
+		this.setTaxType2(form.getTaxType2());
 	}
 
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -76,4 +77,8 @@ public class Product extends TimeEntity implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "shop_id", insertable = false, updatable = false)
 	private Shop shop;
+
+	@ManyToOne
+	@JoinColumn(name = "tax_type", referencedColumnName = "id", insertable = false, updatable = false)
+	private TaxType taxType;
 }

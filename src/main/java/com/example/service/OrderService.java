@@ -3,8 +3,6 @@ package com.example.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.constants.Tax;
-import com.example.constants.Tax.taxes;
 import com.example.enums.OrderStatus;
 import com.example.enums.PaymentStatus;
 import com.example.form.OrderForm;
@@ -88,9 +86,9 @@ public class OrderService {
 			}
 			// 端数処理
 			tax = switch (orderProduct.getTaxRounding()) {
-			case Tax.ROUND -> Math.round(tax);
-			case Tax.CEIL -> Math.ceil(tax);
-			case Tax.FLOOR -> Math.floor(tax);
+			case "3" -> Math.round(tax);
+			case "2" -> Math.ceil(tax);
+			case "1" -> Math.floor(tax);
 			default -> tax;
 			};
 			var subTotal = price * quantity + tax - discount;
