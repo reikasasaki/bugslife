@@ -12,10 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface TaxTypeRepository extends JpaRepository<TaxType, Long> {
-	@Query("SELECT t.id FROM TaxType t where t.taxRate = :taxRate AND t.taxIncluded = :taxIncluded AND t.rounding = :rounding")
+	@Query("SELECT t.id FROM TaxType t where t.rate = :rate AND t.taxIncluded = :taxIncluded AND t.rounding = :rounding")
 
-	Long findByTaxRateAndTaxIncludedAndRounding(@Param("taxRate") Integer rate,
+	Long findByRateAndTaxIncludedAndRounding(@Param("rate") Integer rate,
 			@Param("taxIncluded") Boolean taxIncluded, @Param("rounding") String rounding);
 
-	List<TaxType> findByTaxRate(Integer taxRate);
+	List<TaxType> findByRate(Integer rate);
 }

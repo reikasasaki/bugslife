@@ -48,7 +48,7 @@ public class TaxTypeController {
 	public String create(RedirectAttributes redirectAttributes, @ModelAttribute TaxType entity) {
 		List<TaxType> taxTypes = new ArrayList<>();
 		try {
-			taxTypes = taxTypeService.save(entity.getTaxRate());
+			taxTypes = taxTypeService.save(entity.getRate());
 			redirectAttributes.addFlashAttribute("success", Message.MSG_SUCESS_INSERT);
 			redirectAttributes.addAttribute("q", "create");
 		} catch (Exception e) {
@@ -62,8 +62,8 @@ public class TaxTypeController {
 	@GetMapping("/{rate}")
 	public String show(Model model, @PathVariable Integer rate) {
 		if (rate != null) {
-			List<TaxType> taxtypes = taxTypeService.findByTaxRate(rate);
-			model.addAttribute("taxRateList", taxtypes);
+			List<TaxType> taxtypes = taxTypeService.findByRate(rate);
+			model.addAttribute("rateList", taxtypes);
 		}
 		return "tax_type/show";
 	}
@@ -72,7 +72,7 @@ public class TaxTypeController {
 	public String delete(@PathVariable Integer rate, RedirectAttributes redirectAttributes) {
 		try {
 			if (rate != null) {
-				List<TaxType> taxtypes = taxTypeService.findByTaxRate(rate);
+				List<TaxType> taxtypes = taxTypeService.findByRate(rate);
 				boolean existFlg = false;
 				for (TaxType taxtype : taxtypes) {
 					if (taxtype.getProducts().size() == 0) {

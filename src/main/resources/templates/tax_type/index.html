@@ -1,36 +1,47 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-  layout:decorate="~{layout/layout}">
-<th:block layout:fragment="content">
-  <h1>税率一覧</h1>
-  <hr />
-  <a th:href="@{/tax/new}">新規登録</a><br /><br />
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <th:block layout:fragment="content">
+    <h1>税率一覧</h1>
+    <hr />
+    <a th:href="@{/tax/new}">新規登録</a><br /><br />
 
-  <table class="table table-striped align-middle">
-    <thead>
-      <tr>
-        <th col="col">税率</th>
-        <th col="col"></th>
-        <th col="col"></th>
-        <th col="col"></th>
-        <th col="col"></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="groupedTaxTypeList : ${groupedTaxTypes}">
-        <td th:text="${groupedTaxTypeList[0].taxRate}"></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td> <a class="btn btn-primary" th:href="@{/tax/{rate}(rate = ${groupedTaxTypeList[0].taxRate})}">詳細</a>
-          <form class="d-inline" th:action="@{/tax/{rate}(rate = ${groupedTaxTypeList[0].taxRate})}" th:method="delete">
-          <button class="btn btn-danger" type="submit">削除</button>
-        </form>
-      </td>
-      </tr>
-    </tbody>
-  </table>
-</th:block>
-
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th col="col">税率</th>
+          <th col="col"></th>
+          <th col="col"></th>
+          <th col="col"></th>
+          <th col="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="groupedTaxTypeList : ${groupedTaxTypes}">
+          <td th:text="${groupedTaxTypeList[0].rate}"></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>
+            <a
+              class="btn btn-primary"
+              th:href="@{/tax/{rate}(rate = ${groupedTaxTypeList[0].rate})}"
+              >詳細</a
+            >
+            <form
+              class="d-inline"
+              th:action="@{/tax/{rate}(rate = ${groupedTaxTypeList[0].rate})}"
+              th:method="delete"
+            >
+              <button class="btn btn-danger" type="submit">削除</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </th:block>
 </html>

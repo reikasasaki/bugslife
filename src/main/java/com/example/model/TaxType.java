@@ -25,7 +25,7 @@ public class TaxType {
 	private Long id;
 
 	@Column(name = "tax_rate", nullable = false)
-	public Integer taxRate;
+	public Integer rate;
 
 	@Column(name = "tax_included", nullable = false)
 	private Boolean taxIncluded;

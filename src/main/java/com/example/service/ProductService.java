@@ -142,7 +142,7 @@ public class ProductService {
 
 		Product product = new Product(entity);
 		if (product != null) {
-			Long taxType = taxTypeRepository.findByTaxRateAndTaxIncludedAndRounding(entity.getRate(),
+			Long taxType = taxTypeRepository.findByRateAndTaxIncludedAndRounding(entity.getRate(),
 					entity.getTaxIncluded(), entity.getRounding());
 			product.setTaxType2(taxType);
 			productRepository.save(product);

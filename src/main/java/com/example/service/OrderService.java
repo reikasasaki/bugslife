@@ -79,10 +79,10 @@ public class OrderService {
 			 */
 			if (orderProduct.getTaxIncluded()) {
 				// 税込みの場合
-				tax = price * quantity * orderProduct.getTaxRate() / (100 + orderProduct.getTaxRate());
+				tax = price * quantity * orderProduct.getRate() / (100 + orderProduct.getRate());
 			} else {
 				// 税抜きの場合
-				tax = price * quantity * orderProduct.getTaxRate() / 100;
+				tax = price * quantity * orderProduct.getRate() / 100;
 			}
 			// 端数処理
 			tax = switch (orderProduct.getTaxRounding()) {

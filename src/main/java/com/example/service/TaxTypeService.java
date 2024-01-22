@@ -32,7 +32,7 @@ public class TaxTypeService {
 	public static final String CEIL = "ceil";
 
 	public List<TaxType> save(Integer rates) {
-		List<TaxType> existingTaxTypes = taxTypeRepository.findByTaxRate(rates);
+		List<TaxType> existingTaxTypes = taxTypeRepository.findByRate(rates);
 
 		if (existingTaxTypes.isEmpty()) {
 			List<TaxType> taxTypes = new ArrayList<>();
@@ -42,7 +42,7 @@ public class TaxTypeService {
 				for (String rounding : roundings) {
 					TaxType taxType = new TaxType();
 					// IDは自動生成されるため、ここでは設定不要
-					taxType.setTaxRate(rates);
+					taxType.setRate(rates);
 					taxType.setTaxIncluded(taxIncluded);
 					taxType.setRounding(rounding);
 
@@ -64,18 +64,18 @@ public class TaxTypeService {
 	@Transactional
 	public List<List<TaxType>> getGroupedTaxTypes() {
 		List<TaxType> taxTypes = taxTypeRepository.findAll();
-		Map<Integer, List<TaxType>> groupedByTaxRate = taxTypes.stream()
-				.collect(Collectors.groupingBy(TaxType::getTaxRate));
+		Map<Integer, List<TaxType>> groupedByRate = taxTypes.stream()
+				.collect(Collectors.groupingBy(TaxType::getRate));
 
-		return new ArrayList<>(groupedByTaxRate.values());
+		return new ArrayList<>(groupedByRate.values());
 	}
 
-	public List<TaxType> findByTaxRate(Integer rate) {
-		return taxTypeRepository.findByTaxRate(rate);
+	public List<TaxType> findByRate(Integer rate) {
+		return taxTypeRepository.findByRate(rate);
 	}
 
 	public void delete(Integer rate) {
-		List<TaxType> taxTypes = taxTypeRepository.findByTaxRate(rate);
+		List<TaxType> taxTypes = taxTypeRepository.findByRate(rate);
 		if (!taxTypes.isEmpty()) {
 			taxTypeRepository.deleteAll(taxTypes);
 		}

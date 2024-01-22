@@ -43,7 +43,7 @@ public class OrderProduct extends TimeEntity implements Serializable {
 	private Double discount;
 
 	@Column(name = "tax_rate", nullable = false)
-	private Integer taxRate;
+	private Integer rate;
 
 	@Column(name = "tax_included", nullable = false)
 	private Boolean taxIncluded;
@@ -52,7 +52,7 @@ public class OrderProduct extends TimeEntity implements Serializable {
 	private String taxRounding;
 
 	// public void setTaxType(Tax.taxes tax) {
-	// this.setTaxRate(tax.rate);
+	// this.setRate(tax.rate);
 	// this.setTaxIncluded(tax.taxIncluded);
 	// this.setTaxRounding(tax.rounding);
 	// }

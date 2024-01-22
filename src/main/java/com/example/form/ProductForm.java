@@ -75,7 +75,7 @@ public class ProductForm {
 		if (taxType != null) {
 			rounding = taxType.getRounding();
 			taxType2 = taxType.getId();
-			rate = taxType.getTaxRate();
+			rate = taxType.getRate();
 			taxIncluded = taxType.getTaxIncluded();
 		}
 		this.setWeight(product.getWeight());
