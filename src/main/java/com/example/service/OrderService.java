@@ -1,21 +1,37 @@
 package com.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.enums.CampaignStatus;
+import com.example.enums.DiscountType;
 import com.example.enums.OrderStatus;
 import com.example.enums.PaymentStatus;
 import com.example.form.OrderForm;
+import com.example.model.Campaign;
 import com.example.model.Order;
+import com.example.model.OrderDelivery;
 import com.example.model.OrderPayment;
 import com.example.model.OrderProduct;
 import com.example.repository.OrderRepository;
 import com.example.repository.ProductRepository;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Optional;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Service
 @Transactional(readOnly = true)
@@ -142,4 +158,56 @@ public class OrderService {
 		orderRepository.save(order);
 	}
 
+	public List<Order> findByStatus(String status) {
+		return orderRepository.findByStatus(status);
+	}
+
+	/**
+	 * CSVインポート処理
+	 *
+	 * @param file
+	 * @throws IOException
+	 */
+	@Transactional
+	public void importCSV(MultipartFile file) throws IOException {
+		try (BufferedReader br = new BufferedReader(
+				new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
+			String line = br.readLine(); // 1行目はヘッダーなので読み飛ばす
+			// 一括更新用のリストを作成
+			List<OrderDelivery> orderDeliveries = new ArrayList<>();
+
+			while ((line = br.readLine()) != null) {
+				final String[] split = line.replace("\"", "").split(",");
+				final OrderDelivery orderDelivery = new OrderDelivery();
+				orderDeliveries.add(orderDelivery);
+			}
+
+			// 一括更新処理
+			batchInsert(orderDeliveries);
+
+		} catch (IOException e) {
+			throw new RuntimeException("ファイルが読み込めません", e);
+		}
+	}
+
+	/**
+	 * 一括更新処理実行
+	 *
+	 * @param orderDeliveries
+	 */
+	@SuppressWarnings("unused")
+	private int[] batchInsert(List<OrderDelivery> orderDeliveries) {
+		String sql = "INSERT INTO orderDeliveries (orderId, shippingCode, shippingDate, deliveryDate, deliveryTimezone)"
+				+ " VALUES(:orderId, :shippingCode, :shippingDate, :deliveryDate, :deliveryTimezone)";
+		// FIXME: ここでエラーが出る インサート文の問題？
+		return JdbcTemplate.batchUpdate(sql,
+				orderDeliveries.stream()
+						.map(o -> new MapSqlParameterSource()
+								.addValue("orderId", o.getOrder().getId(), Types.INTEGER)
+								.addValue("shippingCode", o.getShippingCode(), Types.VARCHAR)
+								.addValue("shippingDate", o.getShippingDate(), Types.DATE)
+								.addValue("deliveryDate", o.getDeliveryDate(), Types.DATE)
+								.addValue("deliveryTimezone", o.getDeliveryTimezone(), Types.VARCHAR))
+						.toArray(SqlParameterSource[]::new));
+	}
 }

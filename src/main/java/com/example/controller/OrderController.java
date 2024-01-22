@@ -1,10 +1,19 @@
 package com.example.controller;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,8 +33,15 @@ import com.example.enums.PaymentMethod;
 import com.example.enums.PaymentStatus;
 import com.example.form.OrderForm;
 import com.example.model.Order;
+import com.example.model.OrderDelivery;
+import com.example.service.OrderDeliveryService;
 import com.example.service.OrderService;
 import com.example.service.ProductService;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/orders")
@@ -36,6 +52,9 @@ public class OrderController {
 
 	@Autowired
 	private ProductService productService;
+
+	@Autowired
+	private OrderDeliveryService orderDeliveryService;
 
 	@GetMapping
 	public String index(Model model) {
@@ -135,4 +154,94 @@ public class OrderController {
 			return "redirect:/orders";
 		}
 	}
+
+	@GetMapping("/shipping")
+	public String shipping() {
+		return "order/shipping";
+	}
+
+	/**
+	 * CSVインポート処理
+	 *
+	 * @param uploadFile
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@PostMapping("/shipping")
+	public String uploadFile(@RequestParam("file") MultipartFile uploadFile, RedirectAttributes redirectAttributes) {
+
+		if (uploadFile.isEmpty()) {
+			// ファイルが存在しない場合
+			redirectAttributes.addFlashAttribute("error", "ファイルを選択してください。");
+			return "redirect:/orders/shipping";
+		}
+		if (!"text/csv".equals(uploadFile.getContentType())) {
+			// CSVファイル以外の場合
+			redirectAttributes.addFlashAttribute("error", "CSVファイルを選択してください。");
+			return "redirect:/orders/shipping";
+		}
+		try {
+			orderService.importCSV(uploadFile);
+		} catch (Throwable e) {
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			e.printStackTrace();
+			return "redirect:/orders/shipping";
+		}
+
+		return "redirect:/orders/shipping";
+	}
+
+	/**
+	 * CSVテンプレートダウンロード処理
+	 *
+	 * @param response
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@PostMapping("/shipping/download")
+	public String download(HttpServletResponse response, RedirectAttributes redirectAttributes) {
+		try (BufferedWriter bw = new BufferedWriter(
+				new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8))) {
+
+			String attachment = "attachment; filename=orderDelivery_" + new Date().getTime() + ".csv";
+
+			// コンテンツの種類をCSVに設定
+			response.setContentType("text/csv");
+			// ダウンロード時のファイル名を指定
+			response.setHeader("Content-Disposition", attachment);
+
+			// レスポンスヘッダーをフラッシュして、設定を即座に反映
+			response.flushBuffer();
+
+			List<Order> orders = orderService.findByStatus("ordered");
+
+			for (Order order : orders) {
+				// 未発送のデータのみをCSVに書き込む
+				Optional<OrderDelivery> orderDeliveryOptional = orderDeliveryService.findByOrderId(order.getId());
+				if (orderDeliveryOptional.isPresent()) {
+					OrderDelivery orderDelivery = orderDeliveryOptional.get();
+					String csvLine = order.getId() + "," + orderDelivery.getShippingCode() + ","
+							+ orderDelivery.getShippingDate() + "," + orderDelivery.getDeliveryDate() + ","
+							+ orderDelivery.getDeliveryTimezone();
+
+					bw.write(csvLine);
+					bw.newLine();
+				}
+			}
+			// フラッシュしてデータをクライアントに送信
+			bw.flush();
+
+			// ダウンロードが成功したことを示すメッセージをセット
+			redirectAttributes.addFlashAttribute("successMessage", "CSV download successful");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			// ダウンロードが失敗したことを示すメッセージをセット
+			redirectAttributes.addFlashAttribute("errorMessage", "CSV download failed");
+		}
+
+		// ダウンロードが成功または失敗した場合でもリダイレクトする
+		return "redirect:/shipping";
+	}
+
 }
