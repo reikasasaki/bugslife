@@ -3,7 +3,6 @@ package com.example.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.constants.TaxType;
 import com.example.enums.OrderStatus;
 import com.example.enums.PaymentStatus;
 import com.example.form.OrderForm;
@@ -62,7 +61,7 @@ public class OrderService {
 			orderProduct.setQuantity(p.getQuantity());
 			orderProduct.setPrice((double)product.getPrice());
 			orderProduct.setDiscount(p.getDiscount());
-			orderProduct.setTaxType(TaxType.get(product.getTaxType()));
+			// orderProduct.setTaxType(Tax.get(product.getTaxType()));
 			orderProducts.add(orderProduct);
 		});
 
@@ -80,16 +79,16 @@ public class OrderService {
 			 */
 			if (orderProduct.getTaxIncluded()) {
 				// 税込みの場合
-				tax = price * quantity * orderProduct.getTaxRate() / (100 + orderProduct.getTaxRate());
+				tax = price * quantity * orderProduct.getRate() / (100 + orderProduct.getRate());
 			} else {
 				// 税抜きの場合
-				tax = price * quantity * orderProduct.getTaxRate() / 100;
+				tax = price * quantity * orderProduct.getRate() / 100;
 			}
 			// 端数処理
 			tax = switch (orderProduct.getTaxRounding()) {
-			case TaxType.ROUND -> Math.round(tax);
-			case TaxType.CEIL -> Math.ceil(tax);
-			case TaxType.FLOOR -> Math.floor(tax);
+			case "3" -> Math.round(tax);
+			case "2" -> Math.ceil(tax);
+			case "1" -> Math.floor(tax);
 			default -> tax;
 			};
 			var subTotal = price * quantity + tax - discount;

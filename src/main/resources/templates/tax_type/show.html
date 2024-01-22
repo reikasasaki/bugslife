@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}"
+>
+  <th:block layout:fragment="content">
+    <h1>税率詳細</h1>
+    <hr />
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th col="col">税率</th>
+          <th col="col">入力価格</th>
+          <th col="col">端数処理</th>
+          <th col="col"></th>
+          <th col="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="rateList : ${rateList}">
+          <td th:text="${rateList.rate}"></td>
+          <td th:text="${rateList.taxIncluded} ? '税込み' : '税抜き'"></td>
+          <td th:switch="${rateList.rounding}">
+            <span th:case="'floor'">切り捨て</span>
+            <span th:case="'round'">四捨五入</span>
+            <span th:case="'ceil'">切り上げ</span>
+          </td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <a class="btn btn-secondary" th:href="@{/tax}">税率一覧</a>
+    <br />
+  </th:block>
+</html>
