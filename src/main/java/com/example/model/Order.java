@@ -78,8 +78,6 @@ public class Order extends TimeEntity implements Serializable {
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "order")
 	private List<OrderDelivery> orderDeliveries;
 
-	public Object getId;
-
 	/**
 	 * 支払い方法名を取得する
 	 */

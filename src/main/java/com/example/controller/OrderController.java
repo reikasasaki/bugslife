@@ -7,9 +7,11 @@ import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +44,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequestMapping("/orders")
@@ -168,8 +171,8 @@ public class OrderController {
 	 * @return
 	 */
 	@PostMapping("/shipping")
-	public String uploadFile(@RequestParam("file") MultipartFile uploadFile, RedirectAttributes redirectAttributes) {
-
+	public String uploadFile(@RequestParam("file") MultipartFile uploadFile, RedirectAttributes redirectAttributes,
+			Model model) {
 		if (uploadFile.isEmpty()) {
 			// ファイルが存在しない場合
 			redirectAttributes.addFlashAttribute("error", "ファイルを選択してください。");
@@ -181,14 +184,26 @@ public class OrderController {
 			return "redirect:/orders/shipping";
 		}
 		try {
-			orderService.importCSV(uploadFile);
+			List<OrderDelivery> orderShipping = orderService.getCSV(uploadFile);
+			model.addAttribute("orderShippingList", orderShipping);
 		} catch (Throwable e) {
 			redirectAttributes.addFlashAttribute("error", e.getMessage());
 			e.printStackTrace();
 			return "redirect:/orders/shipping";
 		}
 
-		return "redirect:/orders/shipping";
+		return "order/shipping";
+	}
+
+	@PutMapping("/shipping/update")
+	public String update(
+			@RequestParam("order_id") List<Long> orderId,
+			@RequestParam("shippingCode") List<String> shippingCode,
+			@RequestParam("shippingDate") List<Timestamp> shippingDate,
+			@RequestParam("deliveryDate") List<Timestamp> deliveryDate,
+			@RequestParam("deliveryTimezone") List<Integer> deliveryTimezone) {
+
+		return "";
 	}
 
 	/**
@@ -230,18 +245,10 @@ public class OrderController {
 			}
 			// フラッシュしてデータをクライアントに送信
 			bw.flush();
-
-			// ダウンロードが成功したことを示すメッセージをセット
-			redirectAttributes.addFlashAttribute("successMessage", "CSV download successful");
-
 		} catch (IOException e) {
 			e.printStackTrace();
-			// ダウンロードが失敗したことを示すメッセージをセット
-			redirectAttributes.addFlashAttribute("errorMessage", "CSV download failed");
 		}
-
-		// ダウンロードが成功または失敗した場合でもリダイレクトする
-		return "redirect:/shipping";
+		return null;
 	}
 
 }

@@ -29,6 +29,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Date;
@@ -169,45 +170,58 @@ public class OrderService {
 	 * @throws IOException
 	 */
 	@Transactional
-	public void importCSV(MultipartFile file) throws IOException {
-		try (BufferedReader br = new BufferedReader(
-				new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
-			String line = br.readLine(); // 1行目はヘッダーなので読み飛ばす
-			// 一括更新用のリストを作成
-			List<OrderDelivery> orderDeliveries = new ArrayList<>();
+	public List<OrderDelivery> getCSV(MultipartFile file) throws IOException {
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
+		String line;
+		// 一括更新用のリストを作成
+		List<OrderDelivery> orderDeliveries = new ArrayList<>();
 
-			while ((line = br.readLine()) != null) {
-				final String[] split = line.replace("\"", "").split(",");
-				final OrderDelivery orderDelivery = new OrderDelivery();
+		while ((line = br.readLine()) != null) {
+			final String[] split = line.replace("\"", "").split(",");
+			final OrderDelivery orderDelivery = new OrderDelivery();
+
+			Long orderId = Long.parseLong(split[0]);
+			Optional<Order> orderOptional = orderRepository.findById(orderId);
+
+			if (orderOptional.isPresent()) {
+				Order order = orderOptional.get();
+				orderDelivery.setOrder(order);
+
+				orderDelivery.setShippingCode(split[1]);
+				orderDelivery.setShippingDate(Timestamp.valueOf(split[2]));
+				orderDelivery.setDeliveryDate(Timestamp.valueOf(split[3]));
+				orderDelivery.setDeliveryTimezone(split[4]);
 				orderDeliveries.add(orderDelivery);
 			}
 
-			// 一括更新処理
-			batchInsert(orderDeliveries);
-
-		} catch (IOException e) {
-			throw new RuntimeException("ファイルが読み込めません", e);
 		}
+		return orderDeliveries;
+
+		// 一括更新処理
+		// batchInsert(orderDeliveries);
 	}
 
-	/**
-	 * 一括更新処理実行
-	 *
-	 * @param orderDeliveries
-	 */
-	@SuppressWarnings("unused")
-	private int[] batchInsert(List<OrderDelivery> orderDeliveries) {
-		String sql = "INSERT INTO orderDeliveries (orderId, shippingCode, shippingDate, deliveryDate, deliveryTimezone)"
-				+ " VALUES(:orderId, :shippingCode, :shippingDate, :deliveryDate, :deliveryTimezone)";
-		// FIXME: ここでエラーが出る インサート文の問題？
-		return JdbcTemplate.batchUpdate(sql,
-				orderDeliveries.stream()
-						.map(o -> new MapSqlParameterSource()
-								.addValue("orderId", o.getOrder().getId(), Types.INTEGER)
-								.addValue("shippingCode", o.getShippingCode(), Types.VARCHAR)
-								.addValue("shippingDate", o.getShippingDate(), Types.DATE)
-								.addValue("deliveryDate", o.getDeliveryDate(), Types.DATE)
-								.addValue("deliveryTimezone", o.getDeliveryTimezone(), Types.VARCHAR))
-						.toArray(SqlParameterSource[]::new));
-	}
+	// /**
+	// * 一括更新処理実行
+	// *
+	// * @param orderDeliveries
+	// */
+	// @SuppressWarnings("unused")
+	// private int[] batchInsert(List<OrderDelivery> orderDeliveries) {
+	// String sql = "INSERT INTO orderDeliveries (orderId, shippingCode,
+	// shippingDate, deliveryDate, deliveryTimezone)"
+	// + " VALUES(:orderId, :shippingCode, :shippingDate, :deliveryDate,
+	// :deliveryTimezone)";
+	// // FIXME: ここでエラーが出る インサート文の問題？
+	// return JdbcTemplate.batchUpdate(sql,
+	// orderDeliveries.stream()
+	// .map(o -> new MapSqlParameterSource()
+	// .addValue("orderId", o.getOrder().getId(), Types.INTEGER)
+	// .addValue("shippingCode", o.getShippingCode(), Types.VARCHAR)
+	// .addValue("shippingDate", o.getShippingDate(), Types.DATE)
+	// .addValue("deliveryDate", o.getDeliveryDate(), Types.DATE)
+	// .addValue("deliveryTimezone", o.getDeliveryTimezone(), Types.VARCHAR))
+	// .toArray(SqlParameterSource[]::new));
+	// }
 }
