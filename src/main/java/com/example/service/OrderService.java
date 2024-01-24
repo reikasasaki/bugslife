@@ -52,6 +52,10 @@ public class OrderService {
 		return orderRepository.findById(id);
 	}
 
+	public Order findById(Long id) {
+		return orderRepository.findById(id).get();
+	}
+
 	@Transactional(readOnly = false)
 	public Order save(Order entity) {
 		return orderRepository.save(entity);
@@ -202,26 +206,4 @@ public class OrderService {
 		// batchInsert(orderDeliveries);
 	}
 
-	// /**
-	// * 一括更新処理実行
-	// *
-	// * @param orderDeliveries
-	// */
-	// @SuppressWarnings("unused")
-	// private int[] batchInsert(List<OrderDelivery> orderDeliveries) {
-	// String sql = "INSERT INTO orderDeliveries (orderId, shippingCode,
-	// shippingDate, deliveryDate, deliveryTimezone)"
-	// + " VALUES(:orderId, :shippingCode, :shippingDate, :deliveryDate,
-	// :deliveryTimezone)";
-	// // FIXME: ここでエラーが出る インサート文の問題？
-	// return JdbcTemplate.batchUpdate(sql,
-	// orderDeliveries.stream()
-	// .map(o -> new MapSqlParameterSource()
-	// .addValue("orderId", o.getOrder().getId(), Types.INTEGER)
-	// .addValue("shippingCode", o.getShippingCode(), Types.VARCHAR)
-	// .addValue("shippingDate", o.getShippingDate(), Types.DATE)
-	// .addValue("deliveryDate", o.getDeliveryDate(), Types.DATE)
-	// .addValue("deliveryTimezone", o.getDeliveryTimezone(), Types.VARCHAR))
-	// .toArray(SqlParameterSource[]::new));
-	// }
 }

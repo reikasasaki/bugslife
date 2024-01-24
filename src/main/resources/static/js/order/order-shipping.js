@@ -3,6 +3,7 @@ $(document).ready(function () {
   $("#all_check").on("click", function () {
     // 各行のチェックボックスの切り替え
     $(".row_check").prop("checked", this.checked);
+    $("#update_form").find("input").not(".row_check").prop("disabled", !this.checked);
   });
 
   // 各行のチェック切り替え
@@ -28,27 +29,30 @@ $(document).ready(function () {
   });
 
   $("#update_button").on("click", function () {
-    const data = $(this).closest('form').serializeArray();
+    const data = $(this).closest('form').serializeArray();console.log(data)
     $.ajax({
-      url: '/orders/shipping', // 更新処理
-      type: 'POST',
+      url: '/api/orders/shipping', // 更新処理
+      type: 'PUT',
       data: data
     })
     .done( (result) => {
       $('.result').html(result);
+
+      $(".row_check:checked").closest("tr").find(".badge").each(function (index, element) {
+          $(element).text("成功");
+      })
     })
     .fail( (jqXHR, textStatus, errorThrown) => {
-      alert('Ajax通信に失敗しました。');
       console.log("jqXHR          : " + jqXHR.status); // HTTPステータスを表示
       console.log("textStatus     : " + textStatus);    // タイムアウト、パースエラーなどのエラー情報を表示
       console.log("errorThrown    : " + errorThrown.message); // 例外情報を表示
+
+      $(".row_check:checked").closest("tr").find(".badge").each(function (index, element) {
+        $(element)
+          .removeClass("text-bg-success")
+          .addClass("text-bg-danger")
+          .text("エラー");
+      })
     })
-    .always( (result) => {
-      if($('#answer').val() == '小松菜奈'){
-        console.log('あなたは正しい');
-      }else{
-        console.log('あなたは間違っている');
-      }
-    });
   })
 });

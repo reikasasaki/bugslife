@@ -195,13 +195,14 @@ public class OrderController {
 		return "order/shipping";
 	}
 
-	@PutMapping("/shipping/update")
-	public String update(
+	@PutMapping("/shipping")
+	public String orderUpdate(
 			@RequestParam("order_id") List<Long> orderId,
 			@RequestParam("shippingCode") List<String> shippingCode,
 			@RequestParam("shippingDate") List<Timestamp> shippingDate,
 			@RequestParam("deliveryDate") List<Timestamp> deliveryDate,
 			@RequestParam("deliveryTimezone") List<Integer> deliveryTimezone) {
+		System.out.println("あああああああ" + orderId);
 
 		return "";
 	}
