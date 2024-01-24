@@ -1,21 +1,38 @@
 package com.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.example.enums.CampaignStatus;
+import com.example.enums.DiscountType;
 import com.example.enums.OrderStatus;
 import com.example.enums.PaymentStatus;
 import com.example.form.OrderForm;
+import com.example.model.Campaign;
 import com.example.model.Order;
+import com.example.model.OrderDelivery;
 import com.example.model.OrderPayment;
 import com.example.model.OrderProduct;
 import com.example.repository.OrderRepository;
 import com.example.repository.ProductRepository;
 
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Optional;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,6 +50,10 @@ public class OrderService {
 
 	public Optional<Order> findOne(Long id) {
 		return orderRepository.findById(id);
+	}
+
+	public Order findById(Long id) {
+		return orderRepository.findById(id).get();
 	}
 
 	@Transactional(readOnly = false)
@@ -140,6 +161,49 @@ public class OrderService {
 		order.setPaid(paid);
 		order.setPaymentStatus(paymentStatus);
 		orderRepository.save(order);
+	}
+
+	public List<Order> findByStatus(String status) {
+		return orderRepository.findByStatus(status);
+	}
+
+	/**
+	 * CSVインポート処理
+	 *
+	 * @param file
+	 * @throws IOException
+	 */
+	@Transactional
+	public List<OrderDelivery> getCSV(MultipartFile file) throws IOException {
+		BufferedReader br = new BufferedReader(
+				new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
+		String line;
+		// 一括更新用のリストを作成
+		List<OrderDelivery> orderDeliveries = new ArrayList<>();
+
+		while ((line = br.readLine()) != null) {
+			final String[] split = line.replace("\"", "").split(",");
+			final OrderDelivery orderDelivery = new OrderDelivery();
+
+			Long orderId = Long.parseLong(split[0]);
+			Optional<Order> orderOptional = orderRepository.findById(orderId);
+
+			if (orderOptional.isPresent()) {
+				Order order = orderOptional.get();
+				orderDelivery.setOrder(order);
+
+				orderDelivery.setShippingCode(split[1]);
+				orderDelivery.setShippingDate(Timestamp.valueOf(split[2]));
+				orderDelivery.setDeliveryDate(Timestamp.valueOf(split[3]));
+				orderDelivery.setDeliveryTimezone(split[4]);
+				orderDeliveries.add(orderDelivery);
+			}
+
+		}
+		return orderDeliveries;
+
+		// 一括更新処理
+		// batchInsert(orderDeliveries);
 	}
 
 }

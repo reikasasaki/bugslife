@@ -69,7 +69,6 @@ public class CampaignService {
 		try (BufferedReader br = new BufferedReader(
 				new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
 			String line = br.readLine(); // 1行目はヘッダーなので読み飛ばす
-			// TODO: ここを一括更新処理に変更したい batchInsertメソッドを使用するように
 			// 一括更新用のリストを作成
 			List<Campaign> campaigns = new ArrayList<>();
 
