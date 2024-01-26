@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+  <h1>入金データ</h1>
+  <hr disabled />
+  <a th:href="@{/orders}" class="btn btn-default">Back</a><br /><br />
+
+  <div class="mb-4">
+    <div class="row">
+      <!-- CSVの読み込み -->
+      <form class="row col-6" th:action="@{/orders/payment}" method="post" enctype="multipart/form-data">
+        <div class="input-group">
+          <input class="form-control" type="file" id="file" name="file" accept=".csv" />
+          <button type="submit" class="btn btn-primary">読込</button>
+        </div>
+      </form>
+      <!-- テンプレートCSVのダウンロード -->
+      <form th:method="post" th:action="@{/orders/payment/download}" enctype="multipart/form-data" class="col-4">
+        <input type="submit" value="テンプレートをダウンロード" class="btn btn-warning" />
+      </form>
+    </div>
+  </div>
+
+  <!-- CSVの各行のバリデーションチェック後のエラーを表示する -->
+  <div th:if="${validationError}" th:each="error : ${validationError}">
+    <label class="text-danger" th:text="${error}"></label>
+  </div>
+
+  <!-- CSVの読み込み内容を表示する -->
+  <div th:if="${orderPaymentList}">
+    <!-- チェックを入れたデータのみ出荷済みに更新する -->
+    <form th:action="@{/orders/payment}" th:method="'put'" id="update_form">
+      <button type="button" id="update_button" class="btn btn-success">入金情報更新</button>
+      <table class="table">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="all_check" /></th>
+            <th>受注ID</th>
+            <th>金額</th>
+            <th>入金ステータス</th>
+            <th>支払い方法</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="orderPayment : ${orderPaymentList}">
+            <td>
+              <input class="row_check" type="checkbox" />
+            </td>
+            <td>
+              <a th:href="@{/orders/{id}(id = ${orderPayment.order.id})}" th:text="${orderPayment.order.id}"></a>
+              <input type="hidden" name="order_id[]" th:value="${orderPayment.order.id}" disabled />
+            </td>
+            <td>
+              <th:block th:text="${orderPayment.paid}"></th:block>
+              <input type="hidden" name="paid[]" th:value="${orderPayment.paid}" disabled />
+            </td>
+            <td>
+              <th:block th:text="${orderPayment.order.getPaymentStatusName}"></th:block>
+              <input type="hidden" name="order_paymentStatus[]"th:value="${orderPayment.order.getPaymentStatusName}" disabled />
+            </td>
+            <td>
+              <th:block th:text="${orderPayment.getPaymentMethodName}"></th:block>
+              <input type="hidden" name="method[]"th:value="${orderPayment.getMethod}" disabled />
+            </td>
+            <td>
+              <span class="badge text-bg-success" id="badge">未更新</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>
+</th:block>
+
+</html>
+<script src="/js/order/order-payment.js"></script>
