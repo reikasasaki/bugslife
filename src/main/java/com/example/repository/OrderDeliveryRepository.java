@@ -9,5 +9,5 @@ import com.example.model.OrderDelivery;
 
 @Repository
 public interface OrderDeliveryRepository extends JpaRepository<OrderDelivery, Long> {
-	public Optional<OrderDelivery> findByOrderId(Long orderId);
+	Optional<OrderDelivery> findByOrderId(Long orderId);
 }

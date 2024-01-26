@@ -202,8 +202,41 @@ public class OrderService {
 		}
 		return orderDeliveries;
 
-		// 一括更新処理
-		// batchInsert(orderDeliveries);
 	}
 
+	/**
+	 * 入金CSVインポート処理
+	 *
+	 * @param file
+	 * @throws IOException
+	 */
+	public List<Order> findByPaymentStatusNot(String status) {
+		return orderRepository.findByPaymentStatusNot(status);
+	}
+
+	public List<OrderPayment> getCsvList(MultipartFile file) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8));
+		String line;
+		List<OrderPayment> orderPayments = new ArrayList<>();
+
+		while ((line = br.readLine()) != null) {
+			final String[] split = line.replace("\"", "").split(",");
+			OrderPayment orderPayment = new OrderPayment();
+
+			Long orderId = Long.parseLong(split[0]);
+			Optional<Order> orderOptional = orderRepository.findById(orderId);
+
+			if (orderOptional.isPresent()) {
+				Order order = orderOptional.get();
+				order.setPaymentStatus(split[2]);
+				orderPayment.setOrder(order);
+
+				orderPayment.setPaid(Double.parseDouble(split[1]));
+				orderPayment.setMethod(split[3]);
+				orderPayments.add(orderPayment);
+			}
+
+		}
+		return orderPayments;
+	}
 }

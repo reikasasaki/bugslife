@@ -36,7 +36,9 @@ import com.example.enums.PaymentStatus;
 import com.example.form.OrderForm;
 import com.example.model.Order;
 import com.example.model.OrderDelivery;
+import com.example.model.OrderPayment;
 import com.example.service.OrderDeliveryService;
+import com.example.service.OrderPaymentService;
 import com.example.service.OrderService;
 import com.example.service.ProductService;
 
@@ -58,6 +60,9 @@ public class OrderController {
 
 	@Autowired
 	private OrderDeliveryService orderDeliveryService;
+
+	@Autowired
+	private OrderPaymentService orderPaymentService;
 
 	@GetMapping
 	public String index(Model model) {
@@ -240,4 +245,78 @@ public class OrderController {
 		return null;
 	}
 
+	@GetMapping("/payment")
+	public String paymentList() {
+		return "order/payment";
+	}
+
+	/**
+	 * 入金CSVテンプレートダウンロード処理
+	 *
+	 * @param response
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@PostMapping("/payment/download")
+	public String downloadPaid(HttpServletResponse response, RedirectAttributes redirectAttributes) {
+		try (BufferedWriter bw = new BufferedWriter(
+				new OutputStreamWriter(response.getOutputStream(), StandardCharsets.UTF_8))) {
+			String attachment = "attachment; filename=orderPayment_" + new Date().getTime() + ".csv";
+
+			response.setContentType("text/csv");
+			response.setHeader("Content-Disposition", attachment);
+			response.flushBuffer();
+
+			List<Order> orders = orderService.findByPaymentStatusNot("paid");
+
+			for (Order order : orders) {
+				Optional<OrderPayment> orderPaymentOptional = orderPaymentService.findByOrderId(order.getId());
+				if (orderPaymentOptional.isPresent()) {
+					OrderPayment orderPayment = orderPaymentOptional.get();
+					String csvLine = order.getId() + "," + orderPayment.getPaid() + "," + order.getPaymentStatus() + ","
+							+ orderPayment.getMethod();
+
+					bw.write(csvLine);
+					bw.newLine();
+				}
+			}
+
+			bw.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	/**
+	 * CSVインポート処理
+	 *
+	 * @param uploadFile
+	 * @param redirectAttributes
+	 * @return
+	 */
+	@PostMapping("/payment")
+	public String upload(@RequestParam("file") MultipartFile uploadFile, RedirectAttributes redirectAttributes,
+			Model model) {
+		if (uploadFile.isEmpty()) {
+			// ファイルが存在しない場合
+			redirectAttributes.addFlashAttribute("error", "ファイルを選択してください。");
+			return "redirect:/orders/payment";
+		}
+		if (!"text/csv".equals(uploadFile.getContentType())) {
+			// CSVファイル以外の場合
+			redirectAttributes.addFlashAttribute("error", "CSVファイルを選択してください。");
+			return "redirect:/orders/payment";
+		}
+		try {
+			List<OrderPayment> orderPayments = orderService.getCsvList(uploadFile);
+			model.addAttribute("orderPaymentList", orderPayments);
+		} catch (Throwable e) {
+			redirectAttributes.addFlashAttribute("error", e.getMessage());
+			e.printStackTrace();
+			return "redirect:/orders/payment";
+		}
+		return "order/payment";
+	}
 }
