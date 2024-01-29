@@ -48,6 +48,10 @@ public class OrderService {
 		return orderRepository.findAll();
 	}
 
+	public List<Order> findAllWithOrderProducts() {
+		return orderRepository.findAllWithOrderProducts();
+	}
+
 	public Optional<Order> findOne(Long id) {
 		return orderRepository.findById(id);
 	}
