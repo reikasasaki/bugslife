@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -39,7 +40,7 @@ public class ApiTranscationAmountController {
 	 * @return
 	 */
 	@PostMapping("/{c_id}/upload_csv")
-	public String uploadCSVFile(@PathVariable("c_id") Long companyId, @RequestParam("csv_file") MultipartFile csvFile,
+	public Object uploadCSVFile(@PathVariable("c_id") Long companyId, @RequestParam("csv_file") MultipartFile csvFile,
 			RedirectAttributes redirectAttributes) {
 
 		if (csvFile.isEmpty()) {
@@ -52,17 +53,17 @@ public class ApiTranscationAmountController {
 			redirectAttributes.addFlashAttribute("error", "CSVファイルを選択してください。");
 			return "transactionAmounts/{id}";
 		}
-
+		List<TransactionAmount> aaa = new ArrayList<TransactionAmount>();
 		// csvファイルのインポート処理
 		try {
-			transactionAmountService.importCSV(csvFile, companyId);
+			aaa = transactionAmountService.importCSV(csvFile, companyId);
 		} catch (Throwable t) {
 			redirectAttributes.addFlashAttribute("error", t.getMessage());
 			t.printStackTrace();
 			return "transactionAmounts/{id}";
 		}
 
-		return "transactionAmounts/{id}";
+		return aaa;
 	}
 
 }

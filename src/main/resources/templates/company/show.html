@@ -65,7 +65,7 @@
         <th></th>
       </tr>
     </thead>
-    <tbody>
+    <tbody id = "tablebody">
       <tr th:each="tAmount : ${listTAmount}">
         <td th:text="${tAmount.plusMinus ? '収入' : '支出'}"></td>
         <td th:text="${tAmount.price}"></td>

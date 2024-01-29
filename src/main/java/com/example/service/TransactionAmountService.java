@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -149,15 +150,15 @@ public class TransactionAmountService {
 	 * @param file
 	 * @param companyId
 	 * @throws Exception
-	 * @return void
+	 * @return List<TransactionAmount>
 	 * @todo 非同期化
 	 */
 	@Transactional
-	public void importCSV(MultipartFile file, Long companyId) throws Exception {
+	public List<TransactionAmount> importCSV(MultipartFile file, Long companyId) throws Exception {
 		// アップデート後のインスタンス
 		FileImportInfo updatedImp;
 		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-
+		List<TransactionAmount> transactionAmounts = new ArrayList<TransactionAmount>();
 		// CSV取込親テーブルに取込中でデータを登録する
 		try {
 			// CSV取込親テーブルのインスタンスを生成
@@ -204,6 +205,7 @@ public class TransactionAmountService {
 				transactionAmount.setMemo(split[4]);
 
 				// 取引金額を保存する
+				transactionAmounts.add(transactionAmount);
 				transactionAmountRepository.save(transactionAmount);
 			}
 			updatedImp.setStatus(FileImportStatus.COMPLETE);
@@ -218,5 +220,6 @@ public class TransactionAmountService {
 			updatedImp.setEndDatetime(LocalDateTime.now());
 			fileImportInfoRepository.save(updatedImp);
 		}
+		return transactionAmounts;
 	}
 }
