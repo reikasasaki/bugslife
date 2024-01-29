@@ -66,7 +66,7 @@ public class OrderController {
 
 	@GetMapping
 	public String index(Model model) {
-		List<Order> all = orderService.findAll();
+		List<Order> all = orderService.findAllWithOrderProducts();
 		model.addAttribute("listOrder", all);
 		return "order/index";
 	}
