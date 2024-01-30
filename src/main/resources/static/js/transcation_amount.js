@@ -1,6 +1,6 @@
 $(document).ready(function () {
   $("#upload_csv").on("click", function () {
-    $("#status").text("ファイルをアップロード中...");
+    $("#status").text("取引金額CSV：取込中");
 
     // FormDataオブジェクトを作成
     var formData = new FormData($("#uploadForm")[0]);
@@ -16,14 +16,15 @@ $(document).ready(function () {
       contentType: false,
       success: function (response) {
         // ファイルアップロード成功時のステータス表示
-        $("#status").text("ファイルをアップロードしました");
+        $("#status").text("取引金額CSV：完了");
         updateList(response);
       },
       error: function () {
         // ファイルアップロード失敗時のステータス表示
-        $("#status").text("ファイルのアップロードに失敗しました");
+        $("#status").text("取引金額CSV：エラー");
       },
     });
+    $('input[type="file"]').val(null);
   });
 });
 
@@ -47,6 +48,7 @@ const updateList = (response) => {
     let tdButton = document.createElement("td");
     let aDetails = document.createElement("a");
     let aEdit = document.createElement("a");
+    let aDelete = document.createElement("a");
 
     let deadLineDate = new Date(item["dueDate"]);
     console.log(deadLineDate);
@@ -59,7 +61,7 @@ const updateList = (response) => {
     tdBalanceOfPayment.textContent = item["plusMinus"] ? "収入" : "支出";
     tdExpensive.textContent = item["price"];
     tdDeadLine.textContent =
-      deadLineYear + "年" + deadLineMonth + "月" + deadLineDay + "日";
+      deadLineYear + "-" + deadLineMonth + "-" + deadLineDay ;
     tdIsSupport.textContent = item["hasPaid"]
       ? item["plusMinus"]
         ? "入金済"
@@ -69,11 +71,43 @@ const updateList = (response) => {
       : "未払";
     tdMemo.textContent = item["memo"];
 
+    $(aDetails).addClass("btn btn-primary");
+    aDetails.href = "/transactionAmounts/" + item["id"];
+    aDetails.textContent = "詳細";
+
+    $(aEdit).addClass("btn btn-secondary");
+    aEdit.href = "/transactionAmounts/" + item["id"] + "/edit";
+    aEdit.textContent = "編集";
+
+    $(aDelete).addClass("btn btn-danger");
+    $(aDelete).attr("data-id",item["id"]);
+    aDelete.textContent = "削除";
+
+    $(aDelete).click(function () {
+      let id = $(this).attr("data-id");
+      let deleteButton = $(this);
+      $.ajax({
+        url: "/api/transactionAmounts/" + id,
+        type: "DELETE",
+      success: function () {
+        deleteButton.closest("tr").remove();
+      },
+      error: function () {
+        console.log("削除に失敗しました");
+      },
+      })
+    })    
+
+    tdButton.appendChild(aDetails);
+    tdButton.appendChild(aEdit);
+    tdButton.appendChild(aDelete);
+
     rowElement.appendChild(tdBalanceOfPayment);
     rowElement.appendChild(tdExpensive);
     rowElement.appendChild(tdDeadLine);
     rowElement.appendChild(tdIsSupport);
     rowElement.appendChild(tdMemo);
+    rowElement.appendChild(tdButton);
 
     tablebody.appendChild(rowElement);
   }
