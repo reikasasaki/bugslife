@@ -62,10 +62,9 @@ public class ApiTranscationAmountController {
 			redirectAttributes.addFlashAttribute("error", "CSVファイルを選択してください。");
 			return "transactionAmounts/{id}";
 		}
-		List<TransactionAmount> aaa = new ArrayList<TransactionAmount>();
 		// csvファイルのインポート処理
 		try {
-			aaa = transactionAmountService.importCSV(csvFile, companyId);
+			transactionAmountService.importCSV(csvFile, companyId);
 			transactionAmounts = transactionAmountService.findByCompany(company);
 		} catch (Throwable t) {
 			redirectAttributes.addFlashAttribute("error", t.getMessage());

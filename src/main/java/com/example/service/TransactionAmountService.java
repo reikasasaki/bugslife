@@ -154,7 +154,7 @@ public class TransactionAmountService {
 	 * @todo 非同期化
 	 */
 	@Transactional
-	public List<TransactionAmount> importCSV(MultipartFile file, Long companyId) throws Exception {
+	public void importCSV(MultipartFile file, Long companyId) throws Exception {
 		// アップデート後のインスタンス
 		FileImportInfo updatedImp;
 		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -220,6 +220,5 @@ public class TransactionAmountService {
 			updatedImp.setEndDatetime(LocalDateTime.now());
 			fileImportInfoRepository.save(updatedImp);
 		}
-		return transactionAmounts;
 	}
 }
