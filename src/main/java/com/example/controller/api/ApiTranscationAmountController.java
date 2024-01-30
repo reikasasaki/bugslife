@@ -11,6 +11,7 @@ import com.example.model.TransactionAmount;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -75,17 +76,4 @@ public class ApiTranscationAmountController {
 		return transactionAmounts;
 	}
 
-	@DeleteMapping("/{id}")
-	public void delete(@PathVariable("id") Long id) {
-		try {
-			if (id != null) {
-				Optional<TransactionAmount> tAmountOpt = transactionAmountService.findOne(id);
-				if (tAmountOpt.isPresent()) {
-					transactionAmountService.delete(tAmountOpt.get());
-				}
-			}
-		} catch (Exception e) {
-			throw new ServiceException(e.getMessage());
-		}
-	}
 }
