@@ -48,7 +48,8 @@ const updateList = (response) => {
     let tdButton = document.createElement("td");
     let aDetails = document.createElement("a");
     let aEdit = document.createElement("a");
-    let aDelete = document.createElement("a");
+    let formElement = document.createElement("form");
+    let submitButton = document.createElement("button");
 
     let deadLineDate = new Date(item["dueDate"]);
     console.log(deadLineDate);
@@ -79,28 +80,27 @@ const updateList = (response) => {
     aEdit.href = "/transactionAmounts/" + item["id"] + "/edit";
     aEdit.textContent = "編集";
 
-    $(aDelete).addClass("btn btn-danger");
-    $(aDelete).attr("data-id",item["id"]);
-    aDelete.textContent = "削除";
+    
+    // 必要な属性を設定
+    $(formElement).addClass("d-inline");
+    formElement.setAttribute("action", "/transactionAmounts/" + item["id"]);  // フォームの送信先URLを指定
+    formElement.setAttribute("method", "delete");  // フォームの送信メソッドを指定（例: POST）
 
-    $(aDelete).click(function () {
-      let id = $(this).attr("data-id");
-      let deleteButton = $(this);
-      $.ajax({
-        url: "/api/transactionAmounts/" + id,
-        type: "DELETE",
-      success: function () {
-        deleteButton.closest("tr").remove();
-      },
-      error: function () {
-        console.log("削除に失敗しました");
-      },
-      })
-    })    
+    // <input> 要素を作成してフォームに追加
+    let hiddenInput = document.createElement("input");
+    hiddenInput.setAttribute("type", "hidden");
+    hiddenInput.setAttribute("name", companyId);  // フォームデータのキーを指定
+    hiddenInput.setAttribute("value", companyId);  // フォームデータの値を指定
+    formElement.appendChild(hiddenInput);
+
+    submitButton.setAttribute("type", "submit");
+    $(submitButton).addClass("btn btn-danger");
+    submitButton.textContent = "削除";
+    formElement.appendChild(submitButton);
 
     tdButton.appendChild(aDetails);
     tdButton.appendChild(aEdit);
-    tdButton.appendChild(aDelete);
+    tdButton.appendChild(formElement);
 
     rowElement.appendChild(tdBalanceOfPayment);
     rowElement.appendChild(tdExpensive);

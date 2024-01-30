@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -66,6 +67,7 @@ public class TransactionAmountController {
 	 * @return
 	 */
 	@GetMapping(value = "/{c_id}/new")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String create(Model model, @ModelAttribute TransactionAmount entity, @PathVariable("c_id") Long company_id) {
 		Optional<Company> companyOpt = companyService.findOne(company_id);
 
@@ -119,6 +121,7 @@ public class TransactionAmountController {
 	 * @return
 	 */
 	@GetMapping("/{id}/edit")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String update(Model model, @PathVariable("id") Long id) {
 		try {
 			if (id != null) {
@@ -169,6 +172,7 @@ public class TransactionAmountController {
 	 * @return
 	 */
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public String delete(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
 		try {
 			if (id != null) {
