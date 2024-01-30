@@ -20,6 +20,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -157,7 +158,6 @@ public class TransactionAmountService {
 		// アップデート後のインスタンス
 		FileImportInfo updatedImp;
 		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-
 		// CSV取込親テーブルに取込中でデータを登録する
 		try {
 			// CSV取込親テーブルのインスタンスを生成
