@@ -150,7 +150,7 @@ public class TransactionAmountService {
 	 * @param file
 	 * @param companyId
 	 * @throws Exception
-	 * @return List<TransactionAmount>
+	 * @return void
 	 * @todo 非同期化
 	 */
 	@Transactional
@@ -158,7 +158,6 @@ public class TransactionAmountService {
 		// アップデート後のインスタンス
 		FileImportInfo updatedImp;
 		SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd");
-		List<TransactionAmount> transactionAmounts = new ArrayList<TransactionAmount>();
 		// CSV取込親テーブルに取込中でデータを登録する
 		try {
 			// CSV取込親テーブルのインスタンスを生成
@@ -205,7 +204,6 @@ public class TransactionAmountService {
 				transactionAmount.setMemo(split[4]);
 
 				// 取引金額を保存する
-				transactionAmounts.add(transactionAmount);
 				transactionAmountRepository.save(transactionAmount);
 			}
 			updatedImp.setStatus(FileImportStatus.COMPLETE);
