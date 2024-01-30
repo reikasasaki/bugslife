@@ -184,41 +184,6 @@ public class TransactionAmountController {
 	}
 
 	/**
-	 * 取引金額CSVインポート処理
-	 *
-	 * @param csvFile
-	 * @param redirectAttributes
-	 * @return
-	 */
-	@PostMapping("/{c_id}/upload_csv")
-	public String uploadCSVFile(@PathVariable("c_id") Long companyId, @RequestParam("csv_file") MultipartFile csvFile,
-			RedirectAttributes redirectAttributes) {
-
-		String redirectUrl = "redirect:/companies/" + companyId;
-		if (csvFile.isEmpty()) {
-			// ファイルが存在しない場合
-			redirectAttributes.addFlashAttribute("error", "ファイルを選択してください。");
-			return redirectUrl;
-		}
-		if (!"text/csv".equals(csvFile.getContentType())) {
-			// CSVファイル以外の場合
-			redirectAttributes.addFlashAttribute("error", "CSVファイルを選択してください。");
-			return redirectUrl;
-		}
-
-		// csvファイルのインポート処理
-		try {
-			transactionAmountService.importCSV(csvFile, companyId);
-		} catch (Throwable t) {
-			redirectAttributes.addFlashAttribute("error", t.getMessage());
-			t.printStackTrace();
-			return redirectUrl;
-		}
-
-		return redirectUrl;
-	}
-
-	/**
 	 * CSVテンプレートダウンロード処理
 	 *
 	 * @param response
