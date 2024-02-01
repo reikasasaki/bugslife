@@ -4,7 +4,6 @@ import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,7 +30,6 @@ public class CustomErrorController implements ErrorController {
 		mav.setStatus(status);
 		mav.setViewName("error/500");
 		mav.addObject("status", status.value());
-		mav.addObject("error", attr.get("error"));
 		mav.addObject("trace", attr.get("trace"));
 		return mav;
 	}
