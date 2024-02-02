@@ -53,13 +53,13 @@ public class WebSecurityConfig {
 	UserDetailsService userDetailsService() {
 		UserDetails user = User.builder()
 				.username("user")
-				.password("{noop}password")
+				.password("{bcrypt}$2a$10$RmJFT0Z6l3x4ktJ.O.t80uL6gy/LSPZ8TIfpC1l1bQ/X.g5eEibaa")
 				.roles("USER")
 				.build();
 
 		UserDetails admin = User.builder()
 				.username("admin")
-				.password("{noop}password")
+				.password("{bcrypt}$2a$10$RmJFT0Z6l3x4ktJ.O.t80uL6gy/LSPZ8TIfpC1l1bQ/X.g5eEibaa")
 				.roles("USER", "ADMIN")
 				.build();
 
