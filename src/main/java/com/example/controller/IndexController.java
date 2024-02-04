@@ -33,13 +33,16 @@ public class IndexController {
 				.sorted().collect(Collectors.toList());
 		model.addAttribute("endpoints", list);
 
+		Object loginSession = session.getAttribute("SPRING_SECURITY_CONTEXT");
 		var urlRecordingAttribute = session.getAttribute("urlRecording");
-		if (urlRecordingAttribute instanceof UrlRecording) {
+		if (urlRecordingAttribute instanceof UrlRecording && loginSession != null) {
 			UrlRecording urlRecording = (UrlRecording)urlRecordingAttribute;
 			// 逆順に並び替えてセットする
 			var urls = urlRecording.getUrls();
 			Collections.reverse(urls);
 			model.addAttribute("urlRecording", urls);
+		} else {
+			session.removeAttribute("urlRecording");
 		}
 		return "index";
 	}
